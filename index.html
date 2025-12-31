@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 怡馬當先年運籤 - 我的思房筆記</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rice-white: #fdfaf6; 
+            --lavender-card: #f3e8ff;
+            --gold-light: #fef3c7; 
+            --gold-primary: #d4af37;
+            --pink-purple-glow: rgba(168, 85, 247, 0.75); 
+            --deep-purple-deco: rgba(76, 29, 149, 0.12);
+        }
+
+        /* 一頁式核心：徹底禁止捲軸 */
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            background-color: var(--rice-white);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Noto Serif TC', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                url("https://www.transparenttextures.com/patterns/p6.png"),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%),
+                repeating-conic-gradient(from 0deg at 50% 50%, var(--deep-purple-deco) 0deg 1deg, transparent 1deg 15deg);
+        }
+
+        .handwriting-style {
+            font-family: 'Yuji Syuku', serif;
+            color: #4c1d95;
+            text-shadow: 1px 1px 0px var(--gold-primary), 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 核心卡片佈局：優化高度比例 */
+        .luxury-card {
+            background: var(--lavender-card);
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 0 60px 10px var(--pink-purple-glow), 0 30px 100px -20px rgba(76, 29, 149, 0.5);
+            border-radius: 3.5rem;
+            position: relative;
+            z-index: 10;
+            width: 94vw;
+            max-width: 410px;
+            height: 90vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.25rem 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* 籤詩深紫色區域：釋放最大空間防止文字裁切 */
+        .fortune-slip {
+            background: rgba(30, 10, 60, 0.95);
+            color: var(--gold-light);
+            border: 2px solid var(--gold-primary);
+            position: relative;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+            border-radius: 2.5rem;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0.75rem 1.25rem;
+            margin: 0.25rem 0;
+            min-height: 0; 
+        }
+
+        /* 內容文字大小：使用更積極的 fluid 字體確保完全展現 */
+        #lot-content {
+            font-size: clamp(0.9rem, 3.5vh, 1.35rem);
+            line-height: 1.5;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .shake { animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) infinite; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(2px, 0, 0) rotate(2deg); }
+        }
+
+        .btn-luxury {
+            background: linear-gradient(135deg, #f5d0fe 0%, #d8b4fe 100%);
+            color: #4c1d95; 
+            border: 1.2px solid rgba(255, 255, 255, 0.9);
+            font-weight: 900;
+            box-shadow: 0 8px 15px rgba(139, 92, 246, 0.2);
+        }
+        
+        /* 次要按鈕樣式 */
+        .btn-secondary {
+            border: 1.5px solid #d8b4fe;
+            color: #6b21a8;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* =========================================
+           EXPORT STAGE (1080x1920) 專屬樣式
+           ========================================= */
+        #export-stage {
+            position: fixed;
+            left: -9999px; /* 移出畫面 */
+            top: 0;
+            width: 1080px;
+            height: 1920px;
+            /* 複製 body 背景，確保截圖有底紋 */
+            background-color: var(--rice-white);
+            background-image: 
+                url("https://www.transparenttextures.com/patterns/p6.png"),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%),
+                repeating-conic-gradient(from 0deg at 50% 50%, var(--deep-purple-deco) 0deg 1deg, transparent 1deg 15deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px; /* 給予邊距 */
+            box-sizing: border-box;
+            z-index: -9999;
+        }
+
+        /* 針對 Export Stage 內部的元素進行強制放大與調整 */
+        #export-stage .luxury-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            border-radius: 6rem !important;
+            padding: 3rem !important;
+            box-shadow: 0 0 120px 20px var(--pink-purple-glow), 0 60px 200px -40px rgba(76, 29, 149, 0.5) !important;
+        }
+
+        #export-stage .fortune-slip {
+            border-width: 5px !important;
+            border-radius: 4rem !important;
+            padding: 3rem !important;
+            margin: 1.5rem 0 !important;
+        }
+
+        /* 文字放大區 */
+        #export-stage #lot-index {
+            font-size: 2rem !important;
+            padding: 0.8rem 3rem !important;
+            margin-bottom: 1.5rem !important;
+        }
+
+        #export-stage h4 {
+            font-size: 6.5rem !important; /* 標題超大 */
+            margin-bottom: 1rem !important;
+        }
+
+        #export-stage #lot-content {
+            font-size: 4rem !important; /* 內文超大 */
+            line-height: 1.6 !important;
+            padding: 2rem 0 !important;
+        }
+
+        #export-stage #lot-source {
+            font-size: 2rem !important;
+            margin-bottom: 3rem !important;
+        }
+
+        /* 宜忌區塊放大 */
+        #export-stage .grid {
+            gap: 2rem !important;
+        }
+        #export-stage .grid > div {
+            padding: 1.5rem !important;
+            border-radius: 2rem !important;
+            border-width: 2px !important;
+        }
+        #export-stage .grid span { /* 【宜/不宜】 */
+            font-size: 1.8rem !important;
+            margin-bottom: 0.5rem !important;
+            letter-spacing: 0.2em !important;
+        }
+        #export-stage .grid p { /* 宜忌內容 */
+            font-size: 2.5rem !important;
+        }
+
+        /* 底部文字與 Footer 調整 */
+        #export-stage .bottom-text-area {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important; 
+            align-items: center !important;
+            min-height: 250px !important; 
+            padding-bottom: 2rem !important;
+        }
+
+        #export-stage .bottom-text-area p:not(.congrats) {
+            font-size: 2.2rem !important;
+            margin-bottom: 0 !important; 
+            line-height: 1.4 !important;
+        }
+
+        #export-stage .bottom-text-area .congrats {
+            font-size: 1.6rem !important;
+            margin-top: 2.5rem !important; 
+            letter-spacing: 0.25em !important;
+            opacity: 0.7 !important;
+        }
+
+        /* 在匯出模式下隱藏按鈕 */
+        #export-stage #action-buttons {
+            display: none !important;
+        }
+
+        /* 小螢幕適配 (原有的) */
+        @media (max-height: 720px) {
+            .goddess-svg-box { transform: scale(0.7); margin: -2rem 0; }
+            .main-title { font-size: 3rem !important; }
+            .luxury-card { height: 92vh !important; }
+            .bottom-phrase { font-size: 0.75rem !important; margin-top: 0.25rem !important; }
+            #lot-content { line-height: 1.4 !important; }
+            .fortune-slip { padding: 0.5rem 1rem !important; }
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- 用於生成高清圖的隱藏舞台 -->
+    <div id="export-stage"></div>
+
+    <!-- 背景裝飾 -->
+    <div id="stars-container" class="fixed inset-0 pointer-events-none"></div>
+    <div class="fixed inset-0 pointer-events-none opacity-10 bg-[url('https://www.transparenttextures.com/patterns/crumpled-paper.png')] z-50"></div>
+
+    <audio id="draw-audio" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+
+    <main id="app" class="relative w-full h-full flex flex-col items-center justify-center">
+        
+        <!-- 首頁介面 -->
+        <div id="cover-screen" class="luxury-card text-center">
+            <!-- 頂部區 -->
+            <div class="relative z-10 flex flex-col items-center shrink-0">
+                <p class="text-[10px] tracking-[0.4em] font-black uppercase text-purple-900/60 leading-none mb-1 whitespace-nowrap">My Private Notes • Teacher Tsai</p>
+                <p class="text-[11px] tracking-[0.8em] font-black uppercase text-purple-950/80 mb-1">2026</p>
+                <p class="text-[13px] font-bold text-purple-900 tracking-[0.25em] leading-relaxed">出處：我的思房筆記-蔡思怡老師</p>
+                <div class="h-[1px] w-16 bg-amber-500/40 mx-auto mt-1"></div>
+            </div>
+            
+            <!-- 標題區 -->
+            <div class="py-1 relative z-10 shrink-0">
+                <h1 class="text-6xl sm:text-7xl handwriting-style mb-1 relative main-title leading-tight">怡馬當先</h1>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-[0.4em] mb-1">女神文青宮</h2>
+            </div>
+            
+            <!-- 正中間意象：Q版媽祖 (保持 5 行流蘇、腮紅與細節) -->
+            <div class="flex justify-center relative z-10 goddess-svg-box shrink">
+                <div class="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
+                    <div class="absolute inset-0 border-4 border-amber-500 rounded-full shadow-[0_0_30px_rgba(245,158,11,0.5)]"></div>
+                    <svg viewBox="0 0 100 100" class="w-40 h-40 drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.3" stroke-dasharray="2 4"/>
+                        <path d="M25,50 Q25,15 50,15 Q75,15 75,50 L78,60 L22,60 Z" fill="#2d1a47" />
+                        <path d="M30,85 C30,70 35,62 50,62 C65,62 70,70 70,85 L78,95 C78,98 22,98 22,95 Z" fill="#b91c1c" />
+                        <path d="M40,65 L50,78 L60,65" fill="none" stroke="#fcd34d" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="50" cy="45" r="22" fill="#fef3c7" />
+                        <circle cx="42" cy="45" r="2.5" fill="#4c1d95" /> 
+                        <circle cx="58" cy="45" r="2.5" fill="#4c1d95" /> 
+                        <path d="M46,54 Q50,58 54,54" fill="none" stroke="#4c1d95" stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="36" cy="50" r="4" fill="#f9a8d4" opacity="0.6" /> 
+                        <circle cx="64" cy="50" r="4" fill="#f9a8d4" opacity="0.6" />
+                        <path d="M22,30 L78,30 Q80,18 50,12 Q20,18 22,30 Z" fill="#d4af37" />
+                        <rect x="25" y="26" width="50" height="4" fill="#fcd34d" />
+                        <!-- 還原 5 行流蘇 -->
+                        <g stroke="#fcd34d" stroke-width="1.2">
+                            <line x1="30" y1="28" x2="30" y2="42" /><line x1="40" y1="28" x2="40" y2="44" /><line x1="50" y1="28" x2="50" y2="46" /><line x1="60" y1="28" x2="60" y2="44" /><line x1="70" y1="28" x2="70" y2="42" />
+                        </g>
+                        <circle cx="50" cy="14" r="3.5" fill="#ef4444" stroke="#d4af37" stroke-width="1"/>
+                        <path d="M25,24 Q15,20 20,15" fill="none" stroke="#d4af37" stroke-width="2" />
+                        <path d="M75,24 Q85,20 80,15" fill="none" stroke="#d4af37" stroke-width="2" />
+                        <rect x="46" y="68" width="8" height="24" fill="#fffbeb" rx="1" transform="rotate(-5 50 80)" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 輸入區：鎖定空間，不與女神像重疊 -->
+            <div class="space-y-3 relative z-20 px-4 shrink-0 mt-1">
+                <input type="text" id="user-name" placeholder="輸入姓名領取靈魂摘要" class="w-full py-3 rounded-full border-2 border-purple-300 bg-white/50 focus:bg-white/70 focus:outline-none text-center text-lg text-purple-950 font-black shadow-inner">
+                <button onclick="startDrawing()" class="w-full py-3 rounded-full btn-luxury text-xl tracking-[0.3em] transform active:scale-95 transition-all">
+                    解鎖靈魂摘要
+                </button>
+            </div>
+            
+            <p class="text-purple-950/50 text-sm font-black tracking-widest relative z-10 shrink-0 mt-1 bottom-text">願文字 溫潤你的靈魂</p>
+        </div>
+
+        <!-- 抽籤動畫 -->
+        <div id="draw-screen" class="hidden text-center scale-90 sm:scale-100">
+            <div id="lot-bucket" class="relative inline-block mb-8 shake">
+                <div class="absolute inset-0 bg-fuchsia-500/30 blur-3xl animate-pulse"></div>
+                <svg width="150" height="190" viewBox="0 0 100 130" class="relative z-10">
+                    <path d="M20,30 L80,30 L75,120 L25,120 Z" fill="#ffffff" stroke="#d4af37" stroke-width="3"/>
+                    <rect x="48" y="5" width="4" height="65" fill="#4c1d95" rx="2" />
+                    <text x="50" y="85" text-anchor="middle" fill="#4c1d95" font-size="7" font-weight="900" style="letter-spacing: 0.15em;" class="handwriting-style">怡馬當先</text>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-black text-purple-900 tracking-widest italic">女神摘要中...</h3>
+        </div>
+
+        <!-- 結果畫面：核心優化，壓扁底部以確保內容百分百呈現 -->
+        <div id="result-screen" class="hidden h-full flex flex-col items-center justify-center w-full">
+            <!-- 核心卡片，加入 ID 方便截圖時鎖定 -->
+            <div id="fortune-card" class="luxury-card border-2 border-amber-500/30" style="height: 82vh;">
+                <div class="fortune-slip relative z-10">
+                    <div class="text-center mb-1 shrink-0">
+                        <div class="bg-amber-100 text-purple-950 text-[10px] px-5 py-1 rounded-full font-black mb-1 inline-block tracking-widest shadow-sm" id="lot-index">第一首</div>
+                        <h4 class="text-3xl sm:text-4xl handwriting-style text-white leading-none">怡馬當先</h4>
+                    </div>
+
+                    <!-- 籤詩內容區：動態比例與字體調整，確保完全呈現 -->
+                    <div class="py-3 border-y border-white/10 w-full my-2 px-3 text-center flex items-center justify-center flex-grow overflow-hidden">
+                        <p id="lot-content" class="text-white font-medium"></p>
+                    </div>
+
+                    <p id="lot-source" class="text-[12px] text-amber-200/70 mb-3 font-bold text-center shrink-0"></p>
+
+                    <div class="grid grid-cols-2 gap-3 w-full px-2 shrink-0">
+                        <div class="bg-white/10 rounded-2xl p-2 border border-white/10 text-center">
+                            <span class="block text-[10px] text-amber-300 font-black tracking-widest mb-1 uppercase">【 宜 】</span>
+                            <p id="lot-yi" class="text-[13px] font-black text-white"></p>
+                        </div>
+                        <div class="bg-white/10 rounded-2xl p-2 border border-white/10 text-center">
+                            <span class="block text-[10px] text-purple-200 font-black tracking-widest mb-1 uppercase">【 不宜 】</span>
+                            <p id="lot-buyi" class="text-[13px] font-black text-white"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="px-4 pb-1 text-center mt-1 shrink-0 bottom-text-area">
+                    <p class="text-[11px] text-purple-900 mb-2 font-black leading-tight">「<span id="display-name" class="font-black underline decoration-amber-500 decoration-2 underline-offset-2"></span>，願這份摘要成為你的力量。」</p>
+                    <!-- 按鈕區：三按鈕佈局 -->
+                    <div id="action-buttons" class="flex gap-2 px-1">
+                        <button onclick="resetGame()" class="flex-1 py-2 rounded-full btn-secondary text-[11px] transition-all whitespace-nowrap">重新獲取</button>
+                        <button id="collect-btn" onclick="saveImage()" class="flex-1 py-2 rounded-full btn-secondary text-[11px] transition-all whitespace-nowrap">收藏靈感</button>
+                        <button onclick="shareText()" class="flex-1 py-2 rounded-full btn-luxury text-[11px] font-black transform active:scale-95 transition-all whitespace-nowrap">分享好運</button>
+                    </div>
+                    <!-- 壓縮底部恭印 -->
+                    <p class="text-[8px] text-purple-950/40 font-black tracking-[0.2em] uppercase mt-3 congrats">我的思房筆記 · 蔡思怡老師 恭印</p>
+                </div>
+            </div>
+
+            <!-- 精簡底部祝福 (截圖時不會包含此區塊) -->
+            <div class="mt-3 bg-white/95 py-2 px-8 rounded-full shadow-lg text-center border border-purple-100 relative z-10 shrink-0">
+                <p class="text-purple-950 text-xs font-black">
+                    祝你 <span class="handwriting-style text-purple-950 text-base underline decoration-amber-400">怡馬當先</span>，金榜題名！
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 背景星點
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 40; i++) { 
+            const star = document.createElement('div');
+            star.className = 'fixed rounded-full bg-purple-500/20';
+            const size = Math.random() * 3 + 1;
+            star.style.width = `${size}px`; star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`; star.style.top = `${Math.random() * 100}%`;
+            starsContainer.appendChild(star);
+        }
+
+        const lots = [
+            { index: "第一首", content: "人說勁草才能在疾風後留存，我卻不太相信。因為只有柔弱的草，懂得適風變化，才不會被摧折。", source: "—— 流瀲紫《后宮·如懿傳》", yi: "適風變化", buyi: "頑固不化" },
+            { index: "第二首", content: "如果有人問起你的夢想，請不要說謊，也不要沉默，請大方誠實的說：「我不知道，所以我正在找！」", source: "—— 安時俊《旅行是最好的學習》", yi: "誠實尋找", buyi: "沈默逃避" },
+            { index: "第四首", content: "不管方向或結果如何，邁開步伐就值得慶祝。", source: "—— 張瀞仁《不假裝，也能閃閃發光》", yi: "勇敢邁進", buyi: "止步不前" },
+            { index: "第六首", content: "在家靠父母，出外靠朋友。你什麼時候靠自己？", source: "—— 歐陽立中《人生沒有理所當然》", yi: "勇敢邁進", buyi: "原地踏步" },
+            { index: "第七首", content: "確定自己的座標，輸入目的地，規劃路線，就能從中選定最想經過的風景，以及最能接受的付出成本。", source: "—— 蔡思怡《神展開的國文教室》", yi: "精準定位", buyi: "盲目亂衝" },
+            { index: "第十二首", content: "任何時刻，都是一個改變的時刻。任何時刻，都可以重新開始。任何時刻，為自己創造新的選項。", source: "—— 李惠貞《成為自由人》", yi: "勇於重啟", buyi: "困於舊局" },
+            { index: "第二十四首", content: "造就成功的，是日常習慣，而不是千載難逢的轉變。", source: "—— 詹姆斯·克利爾《原子習慣》", yi: "建立習慣", buyi: "期待奇蹟" },
+            { index: "第三十二首", content: "我不當偶像，不屑用謊言堆砌自己的人設。是我的人格讓我閃閃發亮，就算掉進黑洞，也是最亮的星。", source: "—— 蔡思怡《神展開的國文教室》", yi: "綻放光芒", buyi: "矯揉造作" },
+            { index: "第四十首", content: "現實沒有你想的那麼殘酷，而你也沒有自己以為的如此脆弱。記得你永遠可以為自己勇敢。", source: "—— 肆一《練習喜歡自己》", yi: "擁抱勇氣", buyi: "自怨自艾" },
+            { index: "第五十首", content: "不把天下人的評價放在心頭的人，就不知自省和約束為何。", source: "—— 海宴《瑯琊榜》", yi: "三省吾身", buyi: "盲從他人" },
+            { index: "第五十四首", content: "一旦下定決心，命運就在掌心！", source: "—— 吳淡如《武則天攻略》", yi: "掌握命運", buyi: "猶疑不定" }
+        ];
+
+        let lastIdx = -1;
+        let currentUserName = "";
+
+        function startDrawing() {
+            const nameInput = document.getElementById('user-name');
+            currentUserName = nameInput.value.trim();
+            if (!currentUserName) {
+                nameInput.classList.add('border-red-400', 'shake');
+                setTimeout(() => nameInput.classList.remove('border-red-400', 'shake'), 1000);
+                return;
+            }
+            const audio = document.getElementById('draw-audio');
+            audio.currentTime = 0;
+            audio.play().catch(e => {});
+
+            document.getElementById('cover-screen').classList.add('hidden');
+            document.getElementById('draw-screen').classList.remove('hidden');
+
+            setTimeout(() => {
+                let idx;
+                const now = Date.now();
+                do {
+                    idx = (Math.floor(Math.random() * lots.length) + (now % 100)) % lots.length;
+                } while (idx === lastIdx); 
+                lastIdx = idx;
+                showResult(lots[idx]);
+            }, 3000);
+        }
+
+        function showResult(lot) {
+            document.getElementById('draw-screen').classList.add('hidden');
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('fade-in');
+
+            document.getElementById('display-name').innerText = currentUserName;
+            document.getElementById('lot-index').innerText = lot.index;
+            document.getElementById('lot-content').innerText = lot.content;
+            document.getElementById('lot-source').innerText = lot.source;
+            document.getElementById('lot-yi').innerText = lot.yi;
+            document.getElementById('lot-buyi').innerText = lot.buyi;
+        }
+
+        function resetGame() {
+            const resultScreen = document.getElementById('result-screen');
+            const coverScreen = document.getElementById('cover-screen');
+            resultScreen.classList.remove('fade-in');
+            resultScreen.classList.add('hidden');
+            coverScreen.classList.remove('hidden');
+        }
+
+        // 手機版優化下載功能
+        function saveImage() {
+            const btn = document.getElementById('collect-btn');
+            const originalText = btn.innerText;
+            
+            if (btn.disabled) return;
+            
+            btn.innerText = "生成中...";
+            btn.disabled = true;
+
+            const sourceCard = document.getElementById("fortune-card");
+            const exportStage = document.getElementById("export-stage");
+            
+            exportStage.innerHTML = ''; 
+            const clonedCard = sourceCard.cloneNode(true);
+            exportStage.appendChild(clonedCard);
+            
+            requestAnimationFrame(() => {
+                html2canvas(exportStage, {
+                    width: 1080,
+                    height: 1920,
+                    scale: 1, 
+                    backgroundColor: null, 
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    const fileName = `2026_怡馬當先_${currentUserName || '年運籤'}.png`;
+
+                    // 優化手機下載：轉為 Blob 物件
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            showToast("圖片生成失敗");
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                            return;
+                        }
+
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.download = fileName;
+                        link.href = url;
+                        link.style.display = "none";
+                        
+                        // 關鍵：必須加入 body 才能在某些手機瀏覽器觸發
+                        document.body.appendChild(link);
+                        
+                        try {
+                            link.click();
+                            showToast("✨ 靈感卡片已保存！ ✨");
+                        } catch (err) {
+                             // 如果自動下載失敗（如 iOS Safari），提示長按
+                            console.error("Auto download failed", err);
+                            showToast("請長按圖片進行儲存");
+                        }
+
+                        // 清理
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                            exportStage.innerHTML = '';
+                        }, 100);
+                    }, 'image/png');
+
+                }).catch(err => {
+                    console.error('Screenshot failed:', err);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    showToast("圖片生成失敗，請嘗試截圖");
+                });
+            });
+        }
+
+        // 分享文字功能（改為純複製）
+        function shareText() {
+            const currentUrl = window.location.href;
+            const textToShare = `我在【女神文青宮】獲取了 2026 靈魂摘要！願我們怡馬當先。>>前往取籤 ${currentUrl}`;
+            
+            // 直接複製文字
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = textToShare;
+            dummy.select();
+            dummy.setSelectionRange(0, 99999); // 手機版全選支援
+            try {
+                document.execCommand("copy");
+                showToast("好運連結已複製，分享給親朋好友吧");
+            } catch (e) {
+                showToast("複製失敗，請手動複製");
+            }
+            document.body.removeChild(dummy);
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement("div");
+            toast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 bg-amber-400 text-purple-950 px-8 py-3 rounded-full shadow-2xl z-[99999] animate-bounce text-xs font-black whitespace-nowrap";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.5s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
