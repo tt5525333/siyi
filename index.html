@@ -519,24 +519,50 @@
             });
         }
 
-        // 分享文字功能（改為純複製）
+        // 分享文字功能（針對手機版深度優化）
         function shareText() {
             const currentUrl = "https://cplink.co/JAqPngV9";
             const textToShare = `我在【女神文青宮】獲取了 2026 靈魂摘要！願我們怡馬當先。>>前往取籤 ${currentUrl}`;
             
-            // 直接複製文字
-            const dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.value = textToShare;
-            dummy.select();
-            dummy.setSelectionRange(0, 99999); // 手機版全選支援
+            // 建立暫時的 textarea
+            const textArea = document.createElement("textarea");
+            textArea.value = textToShare;
+            
+            // 關鍵樣式設定：確保元素存在但不可見，且不會觸發卷軸或鍵盤
+            textArea.style.position = "fixed"; 
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            textArea.setAttribute("readonly", ""); 
+            
+            document.body.appendChild(textArea);
+            
+            // 執行選取
+            textArea.focus();
+            textArea.select();
+            textArea.setSelectionRange(0, 99999); 
+            
+            let success = false;
             try {
-                document.execCommand("copy");
-                showToast("好運連結已複製，分享給親朋好友吧");
-            } catch (e) {
-                showToast("複製失敗，請手動複製");
+                success = document.execCommand("copy");
+            } catch (err) {
+                console.error("execCommand failed", err);
             }
-            document.body.removeChild(dummy);
+            
+            // 清理暫存元素
+            document.body.removeChild(textArea);
+
+            // 結果處理與備案
+            if (success) {
+                showToast("好運連結已複製，分享給親朋好友吧");
+            } else {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToShare)
+                        .then(() => showToast("好運連結已複製，分享給親朋好友吧"))
+                        .catch(() => showToast("複製失敗，請手動複製"));
+                } else {
+                    showToast("複製失敗，請手動複製");
+                }
+            }
         }
 
         function showToast(msg) {
